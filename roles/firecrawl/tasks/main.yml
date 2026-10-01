@@ -1,0 +1,5 @@
+---
+- ansible.builtin.import_tasks: deploy.yml
+
+- ansible.builtin.import_tasks: nginx.yml
+  when: firecrawl_manage_nginx | bool

@@ -1,0 +1,33 @@
+---
+galaxy_info:
+  role_name: firecrawl
+  namespace: clawduino
+  author: Jason Parks
+  description: >-
+    Production-ready Ansible role to install, configure, manage, and verify a self-hosted Firecrawl
+    stack (API, worker, Playwright microservice, Redis, PostgreSQL) with optional SearXNG, LLMs, and Nginx TLS.
+  company: clawduino
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Debian
+      versions:
+        - bookworm
+        - trixie
+        - all
+    - name: Ubuntu
+      versions:
+        - jammy
+        - noble
+        - all
+  galaxy_tags:
+    - firecrawl
+    - crawler
+    - scraper
+    - playwright
+    - redis
+    - postgresql
+    - llm
+    - ai
+    - docker
+dependencies: []

@@ -1,0 +1,7 @@
+---
+- name: Deploy Firecrawl
+  hosts: firecrawl_servers
+  become: false
+  roles:
+    - role: firecrawl
+

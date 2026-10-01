@@ -1,0 +1,12 @@
+---
+- name: Restart Firecrawl stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ firecrawl_dir }}"
+    state: restarted
+  become: true
+
+- name: Reload nginx
+  ansible.builtin.systemd:
+    name: nginx
+    state: reloaded
+  become: true

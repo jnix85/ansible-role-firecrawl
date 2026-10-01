@@ -1,0 +1,158 @@
+# ==============================================================================
+# Ansible Secrets & Passwords
+# ==============================================================================
+.vault_pass
+.vault_pass*
+*.vault_pass
+**/.vault_pass
+**/.vault_pass.*
+
+vault.yml
+vault.yaml
+*.vault.yml
+*.vault.yaml
+*.vault
+**/vault.yml
+**/vault.yaml
+!*.vault.yml.example
+!*.vault.yaml.example
+!*.vault.example
+
+secrets.yml
+secrets.yaml
+*.secret
+*.secrets
+**/secrets.yml
+**/secrets.yaml
+!secrets.yml.example
+!secrets.yaml.example
+
+.env
+.env.*
+.secrets.env
+*.secrets.env
+!.env.example
+!.env.template
+
+*credentials*
+!*credentials*.example
+
+*.pem
+*.key
+*.keytab
+*.p12
+*.pfx
+*.pkcs12
+id_rsa*
+id_ed25519*
+id_ecdsa*
+id_dsa*
+
+inventory/hosts.yaml
+inventory/hosts.yml
+**/inventory/hosts.yaml
+**/inventory/hosts.yml
+!inventory/hosts.yaml.example
+!inventory/hosts.yml.example
+!**/inventory/hosts.yaml.example
+!**/inventory/hosts.yml.example
+inventory/group_vars/*/vars.yml
+!inventory/group_vars/*/vars.yml.example
+**/inventory/group_vars/*/vars.yml
+!**/inventory/group_vars/*/vars.yml.example
+
+*.sync-conflict-*
+*.sync-conflict-*.yaml
+*.sync-conflict-*.yml
+
+# ==============================================================================
+# Python & Virtual Environments
+# ==============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.venv/
+**/venv/
+**/ENV/
+**/env/
+.pytest_cache/
+.tox/
+
+# ==============================================================================
+# Ansible Execution Artifacts
+# ==============================================================================
+*.retry
+.ansible/
+.ansible-lint-cache/
+artifacts/
+.molecule/
+
+# ==============================================================================
+# Operating System & Editor Cruft
+# ==============================================================================
+.DS_Store
+.DS_Store?
+._*
+*.swp
+*.swo
+*.bak
+*~
+.idea/
+.vscode/
+# ==============================================================================
+# AI Assistants, Agents & Tooling
+# ==============================================================================
+# Claude Code / Anthropic
+.claude/
+CLAUDE.local.md
+
+# Cursor AI
+.cursor/
+.cursorrules
+.cursorignore
+.cursorindexingignore
+
+# Aider
+.aider*
+.aider.input.history
+.aider.chat.history.md
+.aider.llm.history
+.aider.tags.cache.v*
+
+# Google Gemini / Antigravity
+.gemini/
+gemini-debug.log
+.gemini-clipboard/
+
+# OpenAI / Codex / ChatGPT
+.codex/
+.openai/
+
+# Cline / Roo-Cline
+.cline/
+.clinerules
+cline_docs/
+
+# Continue
+.continue/
+.continuerc.json
+
+# Windsurf
+.windsurf/
+.windsurfrules
+
+# Serena MCP, comP & CodeSight
+.serena/
+.comp/
+.codesight/
+.agents/
+
+# Other AI dev tools
+.warp/
+.crush/
+.codeium/
+.deepseek/
+.amazon-codewhisperer/
+.tabnine/
+.tabnineignore

@@ -1,0 +1,67 @@
+---
+- name: Create Firecrawl deployment and data directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0750"
+    owner: root
+    group: root
+  become: true
+  loop:
+    - "{{ firecrawl_dir }}"
+    - "{{ firecrawl_data_dir }}"
+
+- name: Check for existing runtime env file
+  ansible.builtin.stat:
+    path: "{{ firecrawl_env_file }}"
+  become: true
+  register: firecrawl_env_stat
+
+# Runtime secrets are generated once on the target host and preserved in .env.
+- name: Generate runtime secrets if unconfigured
+  ansible.builtin.set_fact:
+    firecrawl_postgres_password: >-
+      {{ firecrawl_postgres_password | default('', true) | ternary(firecrawl_postgres_password, lookup('community.general.random_string', length=32, special=false)) }}
+    firecrawl_test_api_key: >-
+      {{ firecrawl_test_api_key | default('', true) | ternary(firecrawl_test_api_key, 'fc-' ~ lookup('community.general.random_string', length=32, special=false)) }}
+    firecrawl_bull_auth_key: >-
+      {{ firecrawl_bull_auth_key | default('', true) | ternary(firecrawl_bull_auth_key, lookup('community.general.random_string', length=32, special=false)) }}
+  when: not firecrawl_env_stat.stat.exists
+  no_log: true
+
+- name: Write Firecrawl runtime environment file
+  ansible.builtin.template:
+    src: env.j2
+    dest: "{{ firecrawl_env_file }}"
+    mode: "0600"
+    owner: root
+    group: root
+  become: true
+  when: not firecrawl_env_stat.stat.exists
+  no_log: true
+
+- name: Deploy Docker Compose file
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ firecrawl_dir }}/docker-compose.yml"
+    mode: "0644"
+    owner: root
+    group: root
+  become: true
+  notify: Restart Firecrawl stack
+
+- name: Start Firecrawl stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ firecrawl_dir }}"
+    state: present
+  become: true
+
+- name: Wait for Firecrawl API to become healthy
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:{{ firecrawl_api_port }}/test"
+    status_code: 200
+  register: firecrawl_api_status
+  retries: 30
+  delay: 10
+  until: firecrawl_api_status.status == 200
+  become: true

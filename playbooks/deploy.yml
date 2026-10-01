@@ -1,0 +1,7 @@
+---
+# Rapid configuration, template update, or version upgrade for Firecrawl
+- name: Rapid Firecrawl deploy
+  hosts: firecrawl_servers
+  become: false
+  roles:
+    - role: firecrawl

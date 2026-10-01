@@ -1,0 +1,131 @@
+# Ansible managed
+name: firecrawl
+
+services:
+{% if firecrawl_postgres_enabled | bool %}
+  nuq-postgres:
+    image: {{ firecrawl_postgres_image }}
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: {{ firecrawl_postgres_user }}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: {{ firecrawl_postgres_db }}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U {{ firecrawl_postgres_user }} -d {{ firecrawl_postgres_db }}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - firecrawl_backend
+{% endif %}
+
+{% if firecrawl_redis_enabled | bool %}
+  redis:
+    image: {{ firecrawl_redis_image }}
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - firecrawl_backend
+{% endif %}
+
+  playwright-service:
+    image: {{ firecrawl_playwright_image }}:{{ firecrawl_playwright_version }}
+    restart: unless-stopped
+    shm_size: "2gb"
+    ipc: host
+    environment:
+      - PORT=3000
+      - PROXY_SERVER=${PROXY_SERVER}
+      - PROXY_USERNAME=${PROXY_USERNAME}
+      - PROXY_PASSWORD=${PROXY_PASSWORD}
+    networks:
+      - firecrawl_backend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "3"
+
+  api:
+    image: {{ firecrawl_image }}:{{ firecrawl_version }}
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "{{ firecrawl_api_bind_address }}:{{ firecrawl_api_port }}:3002"
+    depends_on:
+{% if firecrawl_postgres_enabled | bool %}
+      nuq-postgres:
+        condition: service_healthy
+{% endif %}
+{% if firecrawl_redis_enabled | bool %}
+      redis:
+        condition: service_healthy
+{% endif %}
+      playwright-service:
+        condition: service_started
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+    networks:
+      - firecrawl_backend
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "3"
+
+  worker:
+    image: {{ firecrawl_image }}:{{ firecrawl_version }}
+    command: ["npm", "run", "start:worker"]
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+{% if firecrawl_postgres_enabled | bool %}
+      nuq-postgres:
+        condition: service_healthy
+{% endif %}
+{% if firecrawl_redis_enabled | bool %}
+      redis:
+        condition: service_healthy
+{% endif %}
+      playwright-service:
+        condition: service_started
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+    networks:
+      - firecrawl_backend
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "3"
+
+volumes:
+{% if firecrawl_postgres_enabled | bool %}
+  pg_data:
+{% endif %}
+{% if firecrawl_redis_enabled | bool %}
+  redis_data:
+{% endif %}
+
+networks:
+  firecrawl_backend:
+    driver: bridge

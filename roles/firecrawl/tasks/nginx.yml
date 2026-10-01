@@ -1,0 +1,32 @@
+---
+- name: Install nginx reverse proxy package
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+    update_cache: false
+  become: true
+
+- name: Deploy Firecrawl TLS reverse-proxy site configuration
+  ansible.builtin.template:
+    src: nginx-site.conf.j2
+    dest: /etc/nginx/sites-available/firecrawl.conf
+    mode: "0644"
+    owner: root
+    group: root
+  become: true
+  notify: Reload nginx
+
+- name: Enable Firecrawl nginx site
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/firecrawl.conf
+    dest: /etc/nginx/sites-enabled/firecrawl.conf
+    state: link
+  become: true
+  notify: Reload nginx
+
+- name: Disable default nginx site
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  become: true
+  notify: Reload nginx

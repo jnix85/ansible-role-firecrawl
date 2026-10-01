@@ -1,0 +1,110 @@
+---
+# SPDX-License-Identifier: MIT
+
+# ==============================================================================
+# Container Images & Versions
+# ==============================================================================
+firecrawl_image: "ghcr.io/firecrawl/firecrawl"
+firecrawl_version: "latest"
+
+firecrawl_playwright_image: "ghcr.io/firecrawl/playwright-service"
+firecrawl_playwright_version: "latest"
+
+firecrawl_redis_image: "redis:7-alpine"
+firecrawl_postgres_image: "postgres:16-alpine"
+
+# ==============================================================================
+# Filesystem Paths & Permissions
+# ==============================================================================
+firecrawl_dir: "/opt/firecrawl"
+firecrawl_env_file: "{{ firecrawl_dir }}/.env"
+firecrawl_data_dir: "{{ firecrawl_dir }}/data"
+
+# ==============================================================================
+# Network & Binding
+# ==============================================================================
+firecrawl_api_bind_address: "127.0.0.1"
+firecrawl_api_port: 3002
+firecrawl_public_fqdn: "firecrawl.example.com"
+firecrawl_base_url: "http://{{ firecrawl_api_bind_address }}:{{ firecrawl_api_port }}"
+
+# ==============================================================================
+# Playwright Microservice Settings
+# ==============================================================================
+firecrawl_playwright_microservice_url: "http://playwright-service:3000/scrape"
+firecrawl_browser_pool_size: 5
+
+# ==============================================================================
+# Redis Settings
+# ==============================================================================
+firecrawl_redis_enabled: true
+firecrawl_redis_url: "redis://redis:6379"
+firecrawl_redis_rate_limit_url: "{{ firecrawl_redis_url }}"
+
+# ==============================================================================
+# PostgreSQL / NuQ Database Settings
+# ==============================================================================
+firecrawl_postgres_enabled: true
+firecrawl_postgres_host: "nuq-postgres"
+firecrawl_postgres_port: 5432
+firecrawl_postgres_db: "postgres"
+firecrawl_postgres_user: "postgres"
+# Generated on the target host if left blank:
+firecrawl_postgres_password: ""
+
+# ==============================================================================
+# Queue & Concurrency Tuning
+# ==============================================================================
+firecrawl_num_workers_per_queue: 8
+firecrawl_crawl_concurrent_requests: 10
+firecrawl_max_concurrent_jobs: 5
+firecrawl_nuq_backend: ""  # Set to 'fdb' to run queue on FoundationDB instead of Postgres
+
+# ==============================================================================
+# Authentication & Security
+# ==============================================================================
+firecrawl_use_db_authentication: false
+# Generated on the target host if left blank:
+firecrawl_test_api_key: ""
+firecrawl_bull_auth_key: ""
+firecrawl_autumn_secret_key: ""
+
+# ==============================================================================
+# LLM / AI Integration (Extraction, Document Mapping)
+# ==============================================================================
+firecrawl_openai_api_key: ""
+firecrawl_openai_base_url: ""
+firecrawl_model_name: ""
+firecrawl_model_embedding_name: ""
+firecrawl_ollama_base_url: ""
+
+# ==============================================================================
+# Search & Proxy Engine Settings
+# ==============================================================================
+firecrawl_searxng_endpoint: ""
+firecrawl_searxng_engines: ""
+firecrawl_searxng_categories: ""
+
+firecrawl_proxy_server: ""
+firecrawl_proxy_username: ""
+firecrawl_proxy_password: ""
+
+# ==============================================================================
+# Webhooks & Logging
+# ==============================================================================
+firecrawl_self_hosted_webhook_url: ""
+firecrawl_slack_webhook_url: ""
+firecrawl_logging_level: "info"
+
+# ==============================================================================
+# Optional Reverse Proxy (Nginx) & TLS Termination
+# ==============================================================================
+firecrawl_manage_nginx: false
+acme_cert_name: "firecrawl"
+acme_cert_fullchain_file: "/etc/ssl/{{ acme_cert_name }}/fullchain.pem"
+acme_cert_key_file: "/etc/ssl/{{ acme_cert_name }}/privkey.pem"
+
+# ==============================================================================
+# Extra Environment Variables (merged at the end of .env)
+# ==============================================================================
+firecrawl_extra_env: {}

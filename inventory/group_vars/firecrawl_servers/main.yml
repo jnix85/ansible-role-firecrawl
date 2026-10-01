@@ -1,0 +1,14 @@
+---
+# Firecrawl host variables
+firecrawl_version: "latest"
+firecrawl_dir: /opt/firecrawl
+firecrawl_public_fqdn: "firecrawl.{{ domain | default('example.com') }}"
+firecrawl_base_url: "https://{{ firecrawl_public_fqdn }}"
+
+# Optional ACME TLS certificate settings (if using acme_cert / nginx)
+acme_cert_name: firecrawl
+acme_cert_email: "admin@{{ domain | default('example.com') }}"
+acme_cert_domains:
+  - "{{ firecrawl_public_fqdn }}"
+  - "{{ vm_fqdn | default('firecrawl1.' ~ (domain | default('example.com'))) }}"
+acme_cert_post_hook: "systemctl reload nginx"
